@@ -40,3 +40,13 @@ store = {
 #   Лампа - 27 шт, стоимость 1134 руб
 
 # TODO здесь ваш код
+
+goods_reverse = {value: key for key, value in goods.items()}
+
+for key, value in store.items():
+    sum_quantity = 0
+    sum_price = 0
+    for i in value:
+        sum_quantity += i['quantity']
+        sum_price += i['quantity'] * i['price']
+    print(f"{goods_reverse[key]} - {sum_quantity} шт, стоимость {sum_price} руб")
