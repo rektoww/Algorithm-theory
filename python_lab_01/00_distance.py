@@ -20,7 +20,8 @@ for i in range(len(sites)):
 
 for i in range(len(sites)):
     for j in range(i + 1, len(sites)):
-        distance = ((sites[sites_list[i]][0] - sites[sites_list[j]][0])**2 + (sites[sites_list[i]][1] - sites[sites_list[j]][1])**2)**0.5
+        distance = ((sites[sites_list[i]][0] - sites[sites_list[j]][0]) ** 2 + (
+                    sites[sites_list[i]][1] - sites[sites_list[j]][1]) ** 2) ** 0.5
         distances[sites_list[i]][sites_list[j]] = distance
         distances[sites_list[j]][sites_list[i]] = distance
 
