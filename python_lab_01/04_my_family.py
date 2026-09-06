@@ -19,20 +19,41 @@ my_family_height = [
 
 # TODO здесь ваш код
 
-my_family.append('Папа')
-my_family.append('Мама')
-my_family.append('Старший брат')
-my_family.append('Старшая сестра')
-my_family.append('Я')
+def create_family_data():
+    my_family = []
 
-my_family_height.append([my_family[0], 184])
-my_family_height.append([my_family[1], 170])
-my_family_height.append([my_family[2], 185])
-my_family_height.append([my_family[3], 172])
-my_family_height.append([my_family[4], 180])
+    my_family.append('Папа')
+    my_family.append('Мама')
+    my_family.append('Старший брат')
+    my_family.append('Старшая сестра')
+    my_family.append('Я')
 
-summary_family_height = sum(member[1] for member in my_family_height)
+    my_family_height = []
 
-print(f"Рост отца - {my_family_height[0][1]} см")
-print(f"Общий рост моей семьи - {summary_family_height} см")
+    my_family_height.append([my_family[0], 184])
+    my_family_height.append([my_family[1], 170])
+    my_family_height.append([my_family[2], 185])
+    my_family_height.append([my_family[3], 172])
+    my_family_height.append([my_family[4], 180])
+
+    return my_family, my_family_height
+
+
+def calculate_family_height(my_family_height):
+    return sum(member[1] for member in my_family_height)
+
+
+def get_father_height(my_family_height):
+    return my_family_height[0][1]
+
+
+def run():
+    my_family, my_family_height = create_family_data()
+
+    print(f"Рост отца - {get_father_height(my_family_height)} см")
+    print(f"Общий рост моей семьи - {calculate_family_height(my_family_height)} см")
+
+
+if __name__ == '__main__':
+    run()
 

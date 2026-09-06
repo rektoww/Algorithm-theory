@@ -41,12 +41,36 @@ store = {
 
 # TODO здесь ваш код
 
-goods_reverse = {value: key for key, value in goods.items()}
+def calculate_store(goods, store):
+    goods_reverse = {value: key for key, value in goods.items()}
 
-for key, value in store.items():
-    sum_quantity = 0
-    sum_price = 0
-    for i in value:
-        sum_quantity += i['quantity']
-        sum_price += i['quantity'] * i['price']
-    print(f"{goods_reverse[key]} - {sum_quantity} шт, стоимость {sum_price} руб")
+    result = {}
+
+    for key, value in store.items():
+        sum_quantity = 0
+        sum_price = 0
+
+        for item in value:
+            sum_quantity += item['quantity']
+            sum_price += item['quantity'] * item['price']
+
+        result[goods_reverse[key]] = {
+            'quantity': sum_quantity,
+            'price': sum_price,
+        }
+
+    return result
+
+
+def run():
+    result = calculate_store(goods, store)
+
+    for product_name, product_data in result.items():
+        print(
+            f"{product_name} - {product_data['quantity']} шт, "
+            f"стоимость {product_data['price']} руб"
+        )
+
+
+if __name__ == '__main__':
+    run()

@@ -21,10 +21,6 @@ violator_songs_list = [
 # округлите результат до 3 знаков после запятой
 # TODO здесь ваш код
 
-print(f"Три песни звучат "
-      f"{round(violator_songs_list[3][1] + violator_songs_list[5][1] + violator_songs_list[8][1], 3)} "
-      f"минут")
-
 # Есть словарь песен группы Depeche Mode
 violator_songs_dict = {
     'World in My Eyes': 4.76,
@@ -44,6 +40,35 @@ violator_songs_dict = {
 # Обратите внимание на округление
 # TODO здесь ваш код
 
-print(f"А другие три песни звучат "
-      f"{round(violator_songs_dict['Sweetest Perfection'] + violator_songs_dict['Policy of Truth'] + violator_songs_dict['Blue Dress'], 3)} "
-      f"минут")
+def calculate_list_songs_duration(songs):
+    return round(
+        songs[3][1] +
+        songs[5][1] +
+        songs[8][1],
+        3
+    )
+
+
+def calculate_dict_songs_duration(songs):
+    return round(
+        songs['Sweetest Perfection'] +
+        songs['Policy of Truth'] +
+        songs['Blue Dress'],
+        3
+    )
+
+
+def run():
+    print(
+        f"Три песни звучат "
+        f"{calculate_list_songs_duration(violator_songs_list)} минут"
+    )
+
+    print(
+        f"А другие три песни звучат "
+        f"{calculate_dict_songs_duration(violator_songs_dict)} минут"
+    )
+
+
+if __name__ == '__main__':
+    run()

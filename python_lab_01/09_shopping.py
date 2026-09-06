@@ -53,4 +53,13 @@ sweets = {
     ]
 }
 
-print(sweets)
+def get_sweets():
+    return sweets
+
+
+def run():
+    print(get_sweets())
+
+
+if __name__ == '__main__':
+    run()

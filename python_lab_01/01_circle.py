@@ -11,9 +11,8 @@ radius = 42
 #       точность указывается в функции round()
 # TODO здесь ваш код
 
-pi_number = 3.1415926
-circle_area = pi_number * radius ** 2
-print(round(circle_area, 4))
+def calculate_circle_area(radius, pi_number=3.1415926):
+    return pi_number * radius ** 2
 
 # Далее, пусть есть координаты точки
 point_1 = (23, 34)
@@ -28,8 +27,9 @@ point_1 = (23, 34)
 #       операции сравнения дают булевы константы True и False
 # TODO здесь ваш код
 
-distance_to_point1 = (point_1[0] ** 2 + point_1[1] ** 2) ** 0.5
-print(distance_to_point1 <= radius)
+def is_point_inside_circle(point, radius):
+    distance_to_point = (point[0] ** 2 + point[1] ** 2) ** 0.5
+    return distance_to_point <= radius
 
 # Аналогично для другой точки
 point_2 = (30, 30)
@@ -37,8 +37,13 @@ point_2 = (30, 30)
 # Или False, если точка лежит вовне круга.
 # TODO здесь ваш код
 
-distance_to_point2 = (point_2[0] ** 2 + point_2[1] ** 2) ** 0.5
-print(distance_to_point2 <= radius)
+def run():
+    print(round(calculate_circle_area(radius), 4))
+    print(is_point_inside_circle(point_1, radius))
+    print(is_point_inside_circle(point_2, radius))
+
+if __name__ == '__main__':
+    run()
 
 # Пример вывода на консоль:
 #

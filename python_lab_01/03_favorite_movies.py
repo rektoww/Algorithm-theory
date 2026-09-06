@@ -17,7 +17,19 @@ my_favorite_movies = 'Терминатор, Пятый элемент, Ават�
 
 # TODO здесь ваш код
 
-print(my_favorite_movies[0:10])
-print(my_favorite_movies[42:])
-print(my_favorite_movies[12:25])
-print(my_favorite_movies[35:40])
+def get_selected_movies(movies):
+    first_movie = movies[0:10]
+    last_movie = movies[42:]
+    second_movie = movies[12:25]
+    second_last_movie = movies[35:40]
+
+    return first_movie, last_movie, second_movie, second_last_movie
+
+
+def run():
+    for movie in get_selected_movies(my_favorite_movies):
+        print(movie)
+
+
+if __name__ == '__main__':
+    run()
