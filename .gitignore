@@ -1,3 +1,14 @@
-.idea/
-.venv/
+# Python
 __pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# PyCharm
+.idea/
+
+# SQLite
+python_lab_02/data/*.db
+
+# Generated reports
+python_lab_02/reports/

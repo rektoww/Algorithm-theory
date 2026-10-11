@@ -1,3 +1,4 @@
+import sqlite3
 from virtual_museum.content import Exhibit, Article
 from virtual_museum.visitor import Visitor
 from virtual_museum.analytics import (
@@ -6,7 +7,16 @@ from virtual_museum.analytics import (
     most_popular_article,
     most_popular_exhibit
 )
-from virtual_museum.report import export_report
+from virtual_museum.report import export_report, export_excel
+from virtual_museum.database import (
+    create_exhibit,
+    create_article,
+    create_visitor,
+    load_contents,
+    load_visitors,
+    save_interaction
+)
+
 
 def read_positive_int(message):
     while True:
@@ -22,43 +32,41 @@ def read_positive_int(message):
         except ValueError:
             print("Ошибка: необходимо ввести целое число")
 
+
 def add_exhibit(contents):
     print("\n--- Новый экспонат ---")
-
-    content_id = max(contents, default=0) + 1
 
     title = input("Название: ")
     category = input("Категория: ")
 
-    exhibit = Exhibit(content_id, title, category)
-    contents[content_id] = exhibit
+    exhibit = create_exhibit(title, category)
+    contents[exhibit.content_id] = exhibit
 
-    print(f"Экспонат успешно добавлен (ID: {content_id})")
+    print(f"Экспонат успешно добавлен (ID: {exhibit.content_id})")
+
 
 def add_article(contents):
     print("\n-- Новая статья ---")
 
-    content_id = max(contents, default=0) + 1
-
     title = input("Название: ")
     author = input("Автор: ")
 
-    article = Article(content_id, title, author)
-    contents[content_id] = article
+    article = create_article(title, author)
+    contents[article.content_id] = article
 
-    print(f"Статья успешно добавлена (ID: {content_id})")
+    print(f"Статья успешно добавлена (ID: {article.content_id})")
+
 
 def add_visitor(visitors):
     print("\n--- Регистрация посетителя ---")
 
-    visitor_id = max(visitors, default=0) + 1
-
     name = input("Имя: ")
 
-    visitor = Visitor(visitor_id, name)
-    visitors[visitor_id] = visitor
+    visitor = create_visitor(name)
+    visitors[visitor.visitor_id] = visitor
 
-    print(f"Посетитель зарегистрирован (ID: {visitor_id})")
+    print(f"Посетитель зарегистрирован (ID: {visitor.visitor_id})")
+
 
 def perform_action(contents, visitors):
     if not contents or not visitors:
@@ -104,22 +112,37 @@ def perform_action(contents, visitors):
 
     if action == "1":
         if isinstance(content, Exhibit):
-            visitor.view_exhibit(content)
+            action_name = "view_exhibit"
         else:
-            visitor.read_article(content)
-
+            action_name = "read_article"
     elif action == "2":
-        visitor.like_content(content)
-
+        action_name = "like"
     elif action == "3":
         if isinstance(content, Exhibit):
-            visitor.favorite_exhibit(content)
+            action_name = "favorite"
         else:
-            visitor.bookmark_exhibit(content)
+            action_name = "bookmark"
 
     else:
         print("Неизвестное действие")
         return
+
+    save_interaction(visitor, content, action_name)
+
+    if action_name == "view_exhibit":
+        visitor.view_exhibit(content)
+
+    elif action_name == "read_article":
+        visitor.read_article(content)
+
+    elif action_name == "like":
+        visitor.like_content(content)
+
+    elif action_name == "favorite":
+        visitor.favorite_exhibit(content)
+
+    elif action_name == "bookmark":
+        visitor.bookmark_article(content)
 
     print("Действие успешно выполнено")
 
@@ -136,6 +159,7 @@ def show_catalog(contents):
             f"{content.title} | "
             f"Популярность: {content.calculate_popularity()}"
         )
+
 
 def show_visitor_statistics(visitors):
     if not visitors:
@@ -159,6 +183,7 @@ def show_visitor_statistics(visitors):
     for key, value in statistics.items():
         print(f"{key}: {value}")
 
+
 def show_popular_content(contents):
     if not contents:
         print("Каталог пока пуст")
@@ -181,9 +206,10 @@ def show_popular_content(contents):
     else:
         print("Статей пока нет")
 
+
 def main():
-    contents = {}
-    visitors = {}
+    contents = load_contents()
+    visitors = load_visitors()
 
     while True:
         print("\n========== ВИРТУАЛЬНЫЙ МУЗЕЙ ==========")
@@ -195,6 +221,7 @@ def main():
         print("6. Статистика посетителя")
         print("7. Самые популярные материалы")
         print("8. Сохранить отчёт в Word")
+        print("9. Сохранить отчёт в Excel")
         print("0. Выход")
 
         choice = input("\nВыберите действие: ")
@@ -225,6 +252,10 @@ def main():
                 file_path = export_report(contents, visitors)
                 print(f"Отчёт успешно сохранён: {file_path}")
 
+            elif choice == "9":
+                file_path = export_excel(contents, visitors)
+                print(f"Excel-отчет успешно сохранен: {file_path}")
+
             elif choice == "0":
                 print("Завершение работы")
                 break
@@ -232,10 +263,9 @@ def main():
             else:
                 print("Неизвестная команда")
 
-        except (ValueError, TypeError, OSError) as error:
+        except (ValueError, TypeError, OSError, sqlite3.Error) as error:
             print(f"Ошибка: {error}")
+
 
 if __name__ == "__main__":
     main()
-
-
