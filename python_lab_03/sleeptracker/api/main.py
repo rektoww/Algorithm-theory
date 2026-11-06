@@ -1,17 +1,20 @@
 
-from fastapi import FastAPI, HTTPException
+from datetime import datetime
+from pathlib import Path
 
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 
 from sleeptracker.api.schemas import (
     SleepRecordCreate,
     SleepRecordResponse,
+    ActivityLogResponse,
 )
-
-from sleeptracker.domain.sleep_statistics import SleepStatistics
 from sleeptracker.domain.sleep_record import SleepRecord
+from sleeptracker.domain.sleep_statistics import SleepStatistics
 from sleeptracker.database.sleep_repository import SleepRepository
 from sleeptracker.database.activity_log_repository import ActivityLogRepository
-from sleeptracker.api.schemas import ActivityLogResponse
+
 
 app = FastAPI(
     title="SleepTracker API",
@@ -21,6 +24,29 @@ app = FastAPI(
 
 repository = SleepRepository()
 activity_repository = ActivityLogRepository()
+
+
+def ensure_no_overlap(
+    fell_asleep_at: datetime,
+    woke_up_at: datetime,
+    excluded_record_id: int | None = None
+):
+    for existing in repository.get_all():
+        if existing.record_id == excluded_record_id:
+            continue
+
+        if (
+            fell_asleep_at < existing.woke_up_at
+            and woke_up_at > existing.fell_asleep_at
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "Интервал сна пересекается "
+                    f"с записью №{existing.record_id}"
+                )
+            )
+
 
 @app.get("/")
 def root():
@@ -40,9 +66,15 @@ def get_records():
 def create_record(data: SleepRecordCreate):
     record = SleepRecord(**data.model_dump())
 
+    ensure_no_overlap(
+        record.fell_asleep_at,
+        record.woke_up_at
+    )
+
     record_id = repository.add(record)
 
     return repository.get_by_id(record_id)
+
 
 @app.get("/records/{record_id}", response_model=SleepRecordResponse)
 def get_record(record_id: int):
@@ -56,11 +88,24 @@ def get_record(record_id: int):
 
     return record
 
+
 @app.put("/records/{record_id}", response_model=SleepRecordResponse)
 def update_record(record_id: int, data: SleepRecordCreate):
     record = SleepRecord(
         **data.model_dump(),
         record_id=record_id
+    )
+
+    if repository.get_by_id(record_id) is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Запись о сне не найдена"
+        )
+
+    ensure_no_overlap(
+        record.fell_asleep_at,
+        record.woke_up_at,
+        excluded_record_id=record_id
     )
 
     if not repository.update(record):
@@ -70,6 +115,7 @@ def update_record(record_id: int, data: SleepRecordCreate):
         )
 
     return repository.get_by_id(record_id)
+
 
 @app.delete("/records/{record_id}", status_code=204)
 def delete_record(record_id: int):
@@ -103,3 +149,12 @@ def get_statistics():
 @app.get("/activity-log", response_model=list[ActivityLogResponse])
 def get_activity_log():
     return activity_repository.get_all()
+
+
+web_directory = Path(__file__).resolve().parents[1] / "web"
+
+app.mount(
+    "/web",
+    StaticFiles(directory=web_directory, html=True),
+    name="web"
+)

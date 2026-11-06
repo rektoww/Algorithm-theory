@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SleepTracker</title>
+
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+    <script src="./app.js" defer></script>
+</head>
+<body>
+
+<main class="container">
+    <header>
+        <h1>SleepTracker</h1>
+        <p>Приложение для отслеживания сна</p>
+    </header>
+
+    <!-- Форма добавления и редактирования -->
+    <section>
+        <h2 id="formTitle">Новая запись</h2>
+
+        <form id="recordForm">
+            <div class="form-grid">
+
+                <label for="fellAsleep">
+                    Время засыпания
+                    <input
+                        type="datetime-local"
+                        id="fellAsleep"
+                        required
+                    >
+                </label>
+
+                <label for="wokeUp">
+                    Время пробуждения
+                    <input
+                        type="datetime-local"
+                        id="wokeUp"
+                        required
+                    >
+                </label>
+
+                <label for="quality">
+                    Качество сна (1–5)
+                    <input
+                        type="number"
+                        id="quality"
+                        min="1"
+                        max="5"
+                        value="4"
+                        required
+                    >
+                </label>
+
+                <label for="notes">
+                    Комментарий
+                    <input
+                        type="text"
+                        id="notes"
+                        placeholder="Необязательно"
+                    >
+                </label>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="saveButton">
+                    Добавить запись
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelEditButton"
+                    class="secondary-button"
+                    hidden
+                >
+                    Отмена
+                </button>
+            </div>
+        </form>
+
+        <p id="formMessage" class="message"></p>
+    </section>
+
+    <!-- Таблица записей -->
+    <section>
+        <div class="section-header">
+            <h2>Журнал сна</h2>
+
+            <button id="refreshButton">
+                Обновить записи
+            </button>
+        </div>
+
+        <p id="message" class="message"></p>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Засыпание</th>
+                    <th>Пробуждение</th>
+                    <th>Продолжительность</th>
+                    <th>Качество</th>
+                    <th>Комментарий</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+
+                <tbody id="recordsBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+<section>
+    <div class="section-header">
+        <h2>Статистика сна</h2>
+        <button id="refreshStatisticsButton">
+            Обновить статистику
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Количество записей</span>
+            <strong id="recordCount">—</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Средняя продолжительность</span>
+            <strong id="averageDuration">—</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Самый короткий сон</span>
+            <strong id="minDuration">—</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Самый долгий сон</span>
+            <strong id="maxDuration">—</strong>
+        </div>
+    </div>
+
+    <h3>Продолжительность сна по дням</h3>
+
+    <div class="chart-container">
+        <canvas id="sleepChart"></canvas>
+    </div>
+
+    <p id="statisticsMessage" class="message"></p>
+</section>
+
+
+<section>
+    <div class="section-header">
+        <h2>История действий</h2>
+
+        <button id="refreshActivityButton">
+            Обновить историю
+        </button>
+    </div>
+
+    <p id="activityMessage" class="message"></p>
+
+    <div class="table-container">
+        <table class="activity-table">
+            <thead>
+                <tr>
+                    <th>Дата и время</th>
+                    <th>Действие</th>
+                    <th>ID записи</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+
+            <tbody id="activityBody"></tbody>
+        </table>
+    </div>
+</section>
+</main>
+</body>
+</html>
