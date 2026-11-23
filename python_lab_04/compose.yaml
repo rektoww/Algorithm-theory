@@ -1,0 +1,9 @@
+services:
+  lab04:
+    build: .
+    # Корректная обработка завершения дочерних процессов.
+    init: true
+    # Ограничиваем контейнер ресурсами двух CPU
+    cpus: 2.0
+    environment:
+      PYTHON_CPU_COUNT: '2'
